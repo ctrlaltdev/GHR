@@ -1,0 +1,34 @@
+{
+  "name": "ghr",
+  "version": "1.0.0",
+  "description": "CLI to create GitHub Releases",
+  "main": "./GHR",
+  "scripts": {
+    "test": "npm test",
+    "lint": "eslint ./GHR",
+    "fix": "eslint --fix ./GHR"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ctrlaltdev/GHR.git"
+  },
+  "author": "Yorick <yorick@ctrlalt.dev>",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/ctrlaltdev/GHR/issues"
+  },
+  "homepage": "https://github.com/ctrlaltdev/GHR#readme",
+  "devDependencies": {
+    "eslint": "^6.7.2",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^24.9.0"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "isomorphic-unfetch": "^3.0.0"
+  }
+}

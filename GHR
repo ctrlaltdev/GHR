@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+
+require('dotenv').config()
+const fetch = require('isomorphic-unfetch')
+
+const { GH_PERSONAL_TOKEN } = process.env
+const API_URL = 'https://api.github.com'
+const VERSION = 'application/vnd.github.v3+json'
+
+const getLatestRelease = async (org, repo) => {
+  const release = await fetch(`${API_URL}/repos/${org}/${repo}/releases/latest`, {
+    headers: {
+      Accept: VERSION,
+      Authorization: `Bearer ${GH_PERSONAL_TOKEN}`
+    }
+  })
+    .then(r => r.json())
+  console.info(release)
+}
+
+getLatestRelease('ctrlaltdev', 'GHR')
