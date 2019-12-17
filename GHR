@@ -1,16 +1,20 @@
 #!/usr/bin/env node
 
 require('dotenv').config()
-const fetch = require('isomorphic-unfetch')
+
 const yaml = require('js-yaml')
 const fs = require('fs')
 const path = require('path')
 
-const { GH_PERSONAL_TOKEN } = process.env
-const API_URL = 'https://api.github.com'
-const VERSION = 'application/vnd.github.v3+json'
+const GitHub = require('./src/GitHub')
+const Release = require('./src/Release')
 
-const releasesFile = process.argv[2] ? process.argv[2] : './.releases.yml'
+const { GH_PERSONAL_TOKEN } = process.env
+const GH = new GitHub(GH_PERSONAL_TOKEN)
+
+const DRYRUN = process.argv.includes('-n', 2) || process.argv.includes('--dryrun', 2)
+const ymlFiles = process.argv.filter(a => a.match(/(\.ya?ml)$/))
+const releasesFile = ymlFiles.length > 0 ? ymlFiles[0] : './.releases.yml'
 let releases = {}
 try {
   releases = yaml.safeLoad(fs.readFileSync(path.join(__dirname, releasesFile), 'utf8'))
@@ -19,30 +23,13 @@ try {
 }
 
 const getLatestRelease = async (org, repo) => {
-  const release = await fetch(`${API_URL}/repos/${org}/${repo}/releases/latest`, {
-    headers: {
-      Accept: VERSION,
-      Authorization: `Bearer ${GH_PERSONAL_TOKEN}`
-    }
-  })
-    .then(r => r.json())
-    .catch(e => console.error(e))
-  return release
+  const lastRelease = await GH.getLatestRelease(org, repo)
+  return lastRelease
 }
 
 const createRelease = async (org, repo, release) => {
-  const newRelease = await fetch(`${API_URL}/repos/${org}/${repo}/releases`, {
-    method: 'POST',
-    headers: {
-      Accept: VERSION,
-      Authorization: `Bearer ${GH_PERSONAL_TOKEN}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(release)
-  })
-    .then(r => r.json())
-    .then(r => console.info('✅', `${org}/${repo}`, `${r.target_commitish}@${r.tag_name}`, r.name, r.body.split('\n')[0].length > 80 ? r.body.split('\n')[0].slice(80) : r.body.split('\n')[0]))
-    .catch(e => console.error(e))
+  const newRelease = await GH.createRelease(org, repo, release)
+    .then(r => console.info('✅ [CREATED]', `${org}/${repo}`, `${r.target_commitish}@${r.tag_name}`, r.name, r.body.split('\n')[0].length > 80 ? r.body.split('\n')[0].slice(80) : r.body.split('\n')[0]))
   return newRelease
 }
 
@@ -51,27 +38,22 @@ const createRelease = async (org, repo, release) => {
 
   for (const org in releases) {
     for (const repo in releases[org]) {
-      const release = {
-        tag_name: releases[org][repo].tag,
-        name: releases[org][repo].name ? releases[org][repo].name : releases[org][repo].tag,
-        body: releases[org][repo].body ? releases[org][repo].body : '',
-        target_commitish: releases[org][repo].branch ? releases[org][repo].branch : 'master',
-        draft: releases[org][repo].draft ? releases[org][repo].draft : false,
-        prerelease: releases[org][repo].prerelease ? releases[org][repo].prerelease : false
-      }
+      const release = new Release(releases[org][repo]).info
 
       const latestRes = await getLatestRelease(org, repo)
       let shouldCreate = false
       if (latestRes.message === 'Not Found' || latestRes.tag_name !== release.tag_name || latestRes.name !== release.name || latestRes.target_commitish !== release.target_commitish) {
         shouldCreate = true
       }
-      if (shouldCreate) {
+      if (DRYRUN && shouldCreate) {
+        promises.push(new Promise((resolve) => resolve()).then(() => console.info('✅ [CREATE ]', `${org}/${repo}`, `${release.target_commitish}@${release.tag_name}`, release.name, release.body.split('\n')[0].length > 80 ? release.body.split('\n')[0].slice(80) : release.body.split('\n')[0])))
+      } else if (shouldCreate) {
         promises.push(createRelease(org, repo, release))
       } else {
-        promises.push(new Promise((resolve) => resolve()).then(() => console.info('☑️', `${org}/${repo}`, `${latestRes.target_commitish}@${latestRes.tag_name}`, latestRes.name, latestRes.body.split('\n')[0].length > 80 ? latestRes.body.split('\n')[0].slice(80) : latestRes.body.split('\n')[0])))
+        promises.push(new Promise((resolve) => resolve()).then(() => console.info('✅ [EXISTS ]', `${org}/${repo}`, `${latestRes.target_commitish}@${latestRes.tag_name}`, latestRes.name, latestRes.body.split('\n')[0].length > 80 ? latestRes.body.split('\n')[0].slice(80) : latestRes.body.split('\n')[0])))
       }
     }
   }
 
-  Promise.all(promises).then(() => console.info('Done')).catch(e => console.error(e))
+  Promise.all(promises).catch(e => console.error(e))
 })()
