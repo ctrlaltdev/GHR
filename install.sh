@@ -1,3 +1,17 @@
 #!/usr/bin/env sh
 
-npm ci > /dev/null
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+
+if [ ! -f $SCRIPTPATH/.env ]; then
+  cp $SCRIPTPATH/.env.example $SCRIPTPATH/.env
+  echo Remember to add your GitHub Personal Token to $SCRIPTPATH/.env
+fi
+
+npm ci --only=prod > /dev/null
+
+if [ ! -d $HOME/.local/bin ]; then
+  mkdir -p $HOME/.local/bin
+fi
+
+ln -sf $SCRIPTPATH/GHR $HOME/.local/bin/GHR

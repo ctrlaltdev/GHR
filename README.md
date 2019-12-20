@@ -3,6 +3,11 @@ Programmatically create your GitHub Releases
 You are handling dozen of repositories and you realize rapidly that going over all the repos to create those releases is dull and slow?
 Yeah, same here.
 
+## Install
+
+You can run the `install.sh` to install the dependency of the project and create a symlink in your `~/.local/bin` folder.
+If `~/.local/bin` is not in your path, you can add it by adding `export PATH=$PATH:$HOME/.local/bin` to your shell config file.
+
 ## Set Up
 
 First thing, create a [personal token from GitHub](https://github.com/settings/tokens/new) and check the `repo` scope.
@@ -14,7 +19,7 @@ GH_PERSONAL_TOKEN=wootWootToken\o/
 ## Defining the releases
 
 You can define your releases with a yaml file with the following structure:
-```
+```yml
 # The organisation or user that owns the repository
 owner:
   # The repository for which you want to create a release

@@ -1,12 +1,12 @@
 {
   "name": "ghr",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "CLI to create GitHub Releases",
   "main": "./GHR",
   "scripts": {
-    "test": "npm test",
-    "lint": "eslint ./GHR",
-    "fix": "eslint --fix ./GHR"
+    "test": "jest --coverage",
+    "lint": "eslint ./",
+    "fix": "eslint --fix ./"
   },
   "repository": {
     "type": "git",

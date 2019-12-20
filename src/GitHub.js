@@ -1,11 +1,16 @@
 const fetch = require('isomorphic-unfetch')
+const SimpleError = require('./SimpleError')
 
+const DEBUG = process.argv.includes('-d', 2) || process.argv.includes('--debug', 2)
 const API_URL = 'https://api.github.com'
 const VERSION = 'application/vnd.github.v3+json'
 
 class GitHub {
   constructor (token) {
     this.token = token
+    if (!token) {
+      throw new SimpleError('Invalid GitHub Personal Token', DEBUG)
+    }
   }
 
   async getLatestRelease (org, repo) {
