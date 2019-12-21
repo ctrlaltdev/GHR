@@ -1,0 +1,12 @@
+{
+  "ctrlaltdev": {
+    "GHR": {
+      "tag": "v1.0.0",
+      "name": "v1.0.0",
+      "branch": "master",
+      "body": "Yay, it's out",
+      "draft": false,
+      "prerelease": false
+    }
+  }
+}

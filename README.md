@@ -41,6 +41,8 @@ owner:
 You can save your release list in a yaml file.
 When running `GHR`, it will automatically look for a `.releases.yml` file. You can pass a file path as an argument to specify another file to use: `GHR myDopeReleases.yml`
 
+If you're allergic to yml, you can use a json file instead by either using the `--json` flag (it will look for `.releases.json`) or simply passing a json file as an argument: `GHR releases.json`
+
 ## Creating the releases
 
 You can run GHR simply with: `GHR` or `GHR releases.yml` to specify a different releases file.
