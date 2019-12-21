@@ -1,8 +1,8 @@
-require('dotenv').config()
+const path = require('path')
+require('dotenv').config({ path: path.join(__dirname, '../.env') })
 
 const yaml = require('js-yaml')
 const fs = require('fs')
-const path = require('path')
 
 const SimpleError = require('./SimpleError')
 const GitHub = require('./GitHub')
