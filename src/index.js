@@ -7,6 +7,7 @@ const fs = require('fs')
 const SimpleError = require('./SimpleError')
 const GitHub = require('./GitHub')
 const Release = require('./Release')
+const { isGreaterVersion, checkVersions } = require('./checkVersions')
 const localVersion = require('../package.json').version
 
 const { GH_PERSONAL_TOKEN } = process.env
@@ -14,15 +15,9 @@ const GH = new GitHub(GH_PERSONAL_TOKEN)
 
 GH.getLatestRelease('ctrlaltdev', 'GHR').then(GHR => {
   const remoteVersion = GHR.tag_name.substr(1)
-  const lVersion = localVersion.split('.')
-  const rVersion = remoteVersion.split('.')
-  for (let i = 0; i < rVersion.length; i++) {
-    if (lVersion[i] < rVersion[i]) {
-      console.warn(`A newer version of GHR is available: ${remoteVersion} (Local verison: ${localVersion}) - ${GHR.html_url}`)
-    }
-    if (lVersion[i] > rVersion[i]) {
-      break
-    }
+  const needToUpdate = isGreaterVersion(remoteVersion, localVersion)
+  if (needToUpdate) {
+    console.warn(`A newer version of GHR is available: ${remoteVersion} (Local verison: ${localVersion}) - ${GHR.html_url}`)
   }
 })
 
@@ -38,6 +33,14 @@ const createRelease = async (org, repo, release) => {
       return r
     })
   return newRelease
+}
+
+const shouldCreate = (last, next) => {
+  if (last.message === 'Not Found' || last.tag_name !== next.tag_name || last.name !== next.name || last.target_commitish !== next.target_commitish) {
+    return true
+  }
+
+  return false
 }
 
 module.exports = async (opts = {}) => {
@@ -80,16 +83,21 @@ module.exports = async (opts = {}) => {
       const release = new Release(releases[org][repo]).info
 
       const latestRes = await getLatestRelease(org, repo)
-      let shouldCreate = false
-      if (latestRes.message === 'Not Found' || latestRes.tag_name !== release.tag_name || latestRes.name !== release.name || latestRes.target_commitish !== release.target_commitish) {
-        shouldCreate = true
-      }
-      if (DRYRUN && shouldCreate) {
+
+      const versOK = checkVersions(latestRes, release)
+      const CREATE = shouldCreate(latestRes, release)
+
+      if (!versOK) {
+        promises.push(new Promise((resolve, reject) => {
+          console.warn('❌ [ERROR  ]', `${org}/${repo}`, `${release.target_commitish}@${release.tag_name}`, release.name, release.body.split('\n')[0].length > 80 ? release.body.split('\n')[0].slice(80) : release.body.split('\n')[0])
+          reject(new SimpleError('The version you want to create is lesser or equal to the latest remote one', DEBUG))
+        }).catch(e => console.error(e)))
+      } else if (DRYRUN && CREATE) {
         promises.push(new Promise((resolve) => resolve()).then(() => {
           console.info('✅ [CREATE ]', `${org}/${repo}`, `${release.target_commitish}@${release.tag_name}`, release.name, release.body.split('\n')[0].length > 80 ? release.body.split('\n')[0].slice(80) : release.body.split('\n')[0])
           return { ...release, dryrun: true }
         }))
-      } else if (shouldCreate) {
+      } else if (CREATE) {
         promises.push(createRelease(org, repo, release))
       } else {
         promises.push(new Promise((resolve) => resolve()).then(() => {

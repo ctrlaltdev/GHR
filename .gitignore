@@ -1,4 +1,6 @@
 .env
 node_modules
-.releases.*
+.releases.yml
+.releases.yaml
+.releases.json
 coverage
