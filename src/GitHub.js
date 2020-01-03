@@ -13,6 +13,19 @@ class GitHub {
     }
   }
 
+  async getRepository (org, repo) {
+    const repository = await fetch(`${API_URL}/repos/${org}/${repo}`, {
+      method: 'GET',
+      headers: {
+        Accept: VERSION,
+        Authorization: `Bearer ${this.token}`
+      }
+    })
+      .then(r => r.json())
+      .catch(e => console.error(e))
+    return repository
+  }
+
   async getLatestRelease (org, repo) {
     const release = await fetch(`${API_URL}/repos/${org}/${repo}/releases/latest`, {
       method: 'GET',

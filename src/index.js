@@ -7,6 +7,7 @@ const fs = require('fs')
 const SimpleError = require('./SimpleError')
 const GitHub = require('./GitHub')
 const Release = require('./Release')
+const { repoExists } = require('./checkRepo')
 const { isGreaterVersion, checkVersions } = require('./checkVersions')
 const localVersion = require('../package.json').version
 
@@ -81,6 +82,14 @@ module.exports = async (opts = {}) => {
   for (const org in releases) {
     for (const repo in releases[org]) {
       const release = new Release(releases[org][repo]).info
+      const doesRepoExist = await repoExists(org, repo)
+      if (!doesRepoExist) {
+        promises.push(new Promise((resolve, reject) => {
+          console.warn('❌ [ERROR  ]', `${org}/${repo}`, `${release.target_commitish}@${release.tag_name}`, release.name, release.body.split('\n')[0].length > 80 ? release.body.split('\n')[0].slice(80) : release.body.split('\n')[0])
+          reject(new SimpleError('The repository doesn\'t exist or you don\'t have access to it', DEBUG))
+        }).catch(e => console.error(e)))
+        continue
+      }
 
       const latestRes = await getLatestRelease(org, repo)
 

@@ -16,6 +16,9 @@ const isGreaterVersion = (a, b) => {
 }
 
 const checkVersions = (last, next) => {
+  if (last.message && last.message === 'Not Found') {
+    return true
+  }
   if (last.tag_name === next.tag_name) {
     return false
   }
