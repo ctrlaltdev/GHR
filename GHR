@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-const GHR = require('./src/')
+const GHR = require('./src/GHR/')
 
 GHR()

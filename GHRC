@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+
+const GHRC = require('./src/GHRC/')
+
+GHRC()

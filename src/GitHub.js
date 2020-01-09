@@ -53,6 +53,49 @@ class GitHub {
       .catch(e => console.error(e))
     return newRelease
   }
+
+  async getRef (org, repo, branch) {
+    const ref = await fetch(`${API_URL}/repos/${org}/${repo}/git/ref/heads/${branch}`, {
+      method: 'GET',
+      headers: {
+        Accept: VERSION,
+        Authorization: `Bearer ${this.token}`
+      }
+    })
+      .then(r => r.json())
+      .catch(e => console.error(e))
+    return ref
+  }
+
+  async createRef (org, repo, branch) {
+    const ref = await fetch(`${API_URL}/repos/${org}/${repo}/git/refs`, {
+      method: 'POST',
+      headers: {
+        Accept: VERSION,
+        Authorization: `Bearer ${this.token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(branch)
+    })
+      .then(r => r.json())
+      .catch(e => console.error(e))
+    return ref
+  }
+
+  async createPullRequest (org, repo, PR) {
+    const pullRequest = await fetch(`${API_URL}/repos/${org}/${repo}/pulls`, {
+      method: 'POST',
+      headers: {
+        Accept: VERSION,
+        Authorization: `Bearer ${this.token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(PR)
+    })
+      .then(r => r.json())
+      .catch(e => console.error(e))
+    return pullRequest
+  }
 }
 
 module.exports = GitHub
