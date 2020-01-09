@@ -1,26 +1,18 @@
 const path = require('path')
-require('dotenv').config({ path: path.join(__dirname, '../.env') })
+require('dotenv').config({ path: path.join(__dirname, '../../.env') })
 
-const yaml = require('js-yaml')
-const fs = require('fs')
-
-const SimpleError = require('./SimpleError')
-const GitHub = require('./GitHub')
+const updateCheck = require('../updateCheck')
+const load = require('../load')
+const SimpleError = require('../SimpleError')
+const GitHub = require('../GitHub')
 const Release = require('./Release')
-const { repoExists } = require('./checkRepo')
-const { isGreaterVersion, checkVersions } = require('./checkVersions')
-const localVersion = require('../package.json').version
+const { repoExists } = require('../checkRepo')
+const { checkVersions } = require('../checkVersions')
 
 const { GH_PERSONAL_TOKEN } = process.env
 const GH = new GitHub(GH_PERSONAL_TOKEN)
 
-GH.getLatestRelease('ctrlaltdev', 'GHR').then(GHR => {
-  const remoteVersion = GHR.tag_name.substr(1)
-  const needToUpdate = isGreaterVersion(remoteVersion, localVersion)
-  if (needToUpdate) {
-    console.warn(`A newer version of GHR is available: ${remoteVersion} (Local verison: ${localVersion}) - ${GHR.html_url}`)
-  }
-})
+updateCheck(GH)
 
 const getLatestRelease = async (org, repo) => {
   const lastRelease = await GH.getLatestRelease(org, repo)
@@ -48,34 +40,7 @@ module.exports = async (opts = {}) => {
   const DEBUG = opts.debug || (process.argv.includes('-d', 2) || process.argv.includes('--debug', 2))
   const DRYRUN = opts.dryrun || (process.argv.includes('-n', 2) || process.argv.includes('--dryrun', 2))
 
-  const ymlFiles = process.argv.filter(a => a.match(/(\.ya?ml)$/))
-  const jsonFiles = process.argv.filter(a => a.match(/(\.json)$/))
-
-  let releasesFile
-  let isYML = process.argv.includes('--yml', 2)
-  let isJSON = process.argv.includes('--json', 2)
-
-  if (jsonFiles.length > 0 || isJSON) {
-    isJSON = true
-    releasesFile = jsonFiles.length > 0 ? path.join(process.cwd(), jsonFiles[0]) : `${process.cwd()}/.releases.json`
-  } else {
-    isYML = true
-    releasesFile = ymlFiles.length > 0 ? path.join(process.cwd(), ymlFiles[0]) : `${process.cwd()}/.releases.yml`
-  }
-
-  let releases = {}
-
-  try {
-    if (opts.releases) {
-      releases = opts.releases
-    } if (isYML) {
-      releases = yaml.safeLoad(fs.readFileSync(releasesFile, 'utf8'))
-    } else if (isJSON) {
-      releases = JSON.parse(fs.readFileSync(releasesFile, 'utf8'))
-    }
-  } catch (e) {
-    throw new SimpleError(`${releasesFile} not found or invalid`, DEBUG)
-  }
+  const releases = load({ DEBUG, DRYRUN })
 
   const promises = []
 

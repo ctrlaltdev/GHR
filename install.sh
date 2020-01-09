@@ -15,3 +15,5 @@ if [ ! -d $HOME/.local/bin ]; then
 fi
 
 ln -sf $SCRIPTPATH/GHR $HOME/.local/bin/GHR
+ln -sf $SCRIPTPATH/GHRC $HOME/.local/bin/GHRC
+ln -sf $SCRIPTPATH/GHPR $HOME/.local/bin/GHPR
