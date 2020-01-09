@@ -21,7 +21,7 @@ const createPR = async (org, repo, PR, DEBUG = false) => {
         }
         throw new SimpleError(r.message, DEBUG)
       }
-      console.info('✅ [CREATED]', `${org}/${repo}`, `${PR.base} ᐸ ${PR.head}`, r.url)
+      console.info('✅ [CREATED]', `${org}/${repo}`, `${PR.base} ᐸ ${PR.head}`, r.html_url)
       return r
     })
   return newPR

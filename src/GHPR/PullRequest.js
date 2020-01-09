@@ -4,7 +4,7 @@ class PullRequest {
   constructor (info) {
     this.release = new Release(info).info
     this.tag = info.tag
-    this.prefix = info.branchPrefix || 'RC/'
+    this.prefix = info.branchPrefix || 'rc/'
   }
 
   get info () {
