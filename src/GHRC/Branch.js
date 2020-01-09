@@ -2,7 +2,7 @@ class Branch {
   constructor (info) {
     this.tag = info.tag
     this.ref = info.ref || 'develop'
-    this.prefix = info.branchPrefix || 'RC/'
+    this.prefix = info.branchPrefix || 'rc/'
   }
 
   set src (hash) {

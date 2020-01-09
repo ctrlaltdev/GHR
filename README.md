@@ -26,16 +26,20 @@ owner:
   repository:
     # The tag marking your release, this is mandatory
     tag: "v1.0.0"
-    # Name for the release, optional, default to tag value
+    # Name for the release for GHR, Title of the PR for GHPR, optional, default to tag value
     name: "Version 1"
-    # Branch to use for the release, optional, default to master
+    # Branch to use for the release for GHR, branch against which create the PR for GHPR, optional, default to master
     branch: "master"
-    # Description of your release, optional, default to empty string
+    # Description of your release for GHR, Description of the PR for GHPR, optional, default to empty string
     body: "# CHANGELOG\n\nNow using GHR\n"
     # Specify if release is a draft, optional, default to false
     draft: false
     # Specify if release is not production ready, optional, default to false
     prerelease: false
+    # For GHRC - Specify the base branch from which creating the RC, optional, default to 'develop'
+    ref: 'dev'
+    # For GHRC and GHPR - Specify the prefix for the RC branch, optional, default to 'rc/'
+    branchPrefix: "RC/"
 ```
 
 You can save your release list in a yaml file.
@@ -49,3 +53,11 @@ You can run GHR simply with: `GHR` or `GHR releases.yml` to specify a different 
 You can also do a dry run by using -n or --dryrun flags: `GHR -n`
 
 GHR will check the latest release of your repository and won't create if the tag, name and branch are identical to what you're trying to create.
+
+## Creating a Release Candidate Branch
+
+You can run GHRC to create a RC branch by running `GHRC` instead of `GHR` - supports the same flags and release file as GHR
+
+## Creating a Pull Request against Master
+
+You can run GHPR to create a PR from your RC towards the release branch by running `GHPR` instead of `GHR` - supports the same flags and release file as GHR
