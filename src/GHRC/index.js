@@ -21,7 +21,7 @@ const createBranch = async (org, repo, branch, DEBUG = false) => {
       if (r.message) {
         throw new SimpleError(r.message, DEBUG)
       }
-      console.info('✅ [CREATED]', `${org}/${repo}/RC/${branch.tag}`, `from ${branch.ref}`)
+      console.info('✅ [CREATED]', `${org}/${repo}/${branch.prefix}${branch.tag}`, `from ${branch.ref}`)
       return r
     })
   return newBranch
@@ -46,10 +46,10 @@ module.exports = async (opts = {}) => {
       if (DRYRUN) {
         promises.push(new Promise((resolve, reject) => {
           if (branch.src) {
-            console.info('✅ [CREATE ]', `${org}/${repo}/RC/${branch.tag}`, `from ${branch.ref}`)
+            console.info('✅ [CREATE ]', `${org}/${repo}/${branch.prefix}${branch.tag}`, `from ${branch.ref}`)
             resolve({ ...branch, dryrun: true })
           } else {
-            console.warn('❌ [ERROR  ]', `${org}/${repo}/RC/${branch.tag}`, `from ${branch.ref}`)
+            console.warn('❌ [ERROR  ]', `${org}/${repo}/${branch.prefix}${branch.tag}`, `from ${branch.ref}`)
             reject(new SimpleError(`The source branch ${branch.ref} doesn't exist`, DEBUG))
           }
         }))
