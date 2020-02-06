@@ -1,6 +1,6 @@
 {
   "name": "ghr",
-  "version": "1.7.0",
+  "version": "1.6.0",
   "description": "CLI to create GitHub Releases",
   "main": "./GHR",
   "scripts": {
