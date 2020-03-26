@@ -1,6 +1,3 @@
-const path = require('path')
-require('dotenv').config({ path: path.join(__dirname, '../../.env') })
-
 const updateCheck = require('../updateCheck')
 const load = require('../load')
 const SimpleError = require('../SimpleError')

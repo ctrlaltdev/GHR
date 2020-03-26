@@ -9,4 +9,5 @@ module.exports = GH => {
       console.warn(`A newer version of GHR is available: ${remoteVersion} (Local verison: ${localVersion}) - ${GHR.html_url}`)
     }
   })
+    .catch(console.error)
 }

@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
-const GHR = require('./src/GHR/')
-
-GHR()
+(async () => {
+  const loaded = await require('./src/env').load().catch(error => ({ error }))
+  if (loaded.parsed) {
+    const GHR = require('./src/GHR/')
+    GHR()
+  }
+})()

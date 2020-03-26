@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
-const GHRC = require('./src/GHRC/')
-
-GHRC()
+(async () => {
+  const loaded = await require('./src/env').load().catch(error => ({ error }))
+  if (loaded.parsed) {
+    const GHRC = require('./src/GHRC/')
+    GHRC()
+  }
+})()
