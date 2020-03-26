@@ -1,4 +1,4 @@
-const fetch = require('isomorphic-unfetch')
+const fetch = require('node-fetch')
 const SimpleError = require('./SimpleError')
 
 const DEBUG = process.argv.includes('-d', 2) || process.argv.includes('--debug', 2)
