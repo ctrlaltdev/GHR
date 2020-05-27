@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+(async () => {
+  const loaded = await require('./src/env').load().catch(error => ({ error }))
+  if (loaded.parsed) {
+    const args = process.argv.slice(2)
+    const GHCL = require('./src/GHCL/')
+    GHCL({ args })
+  }
+})()

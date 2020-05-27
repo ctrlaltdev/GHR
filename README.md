@@ -61,3 +61,16 @@ You can run GHRC to create a RC branch by running `GHRC` instead of `GHR` - supp
 ## Creating a Pull Request against Master
 
 You can run GHPR to create a PR from your RC towards the release branch by running `GHPR` instead of `GHR` - supports the same flags and release file as GHR
+
+## Getting the Changelog from a GitHub Project
+
+You can run GHCL to generate a changelog based on a GitHub Project.
+```
+GHCL list [flags]
+```
+Provide -u user or -o org to define the scope and add -r if the project is bound to a specific repository
+Then note the project ID you want to get the Changelog for and run
+```
+GHCL get [projectId]
+```
+This will ouput a changelog in markdown

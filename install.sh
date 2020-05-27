@@ -17,3 +17,4 @@ fi
 ln -sf $SCRIPTPATH/GHR $HOME/.local/bin/GHR
 ln -sf $SCRIPTPATH/GHRC $HOME/.local/bin/GHRC
 ln -sf $SCRIPTPATH/GHPR $HOME/.local/bin/GHPR
+ln -sf $SCRIPTPATH/GHCL $HOME/.local/bin/GHCL

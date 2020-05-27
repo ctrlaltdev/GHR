@@ -3,6 +3,7 @@
   "version": "1.7.0",
   "description": "CLI to create GitHub Releases",
   "main": "./GHR",
+  "preferGlobal": true,
   "scripts": {
     "test": "jest --coverage",
     "lint": "eslint ./",

@@ -4,6 +4,7 @@ const SimpleError = require('./SimpleError')
 const DEBUG = process.argv.includes('-d', 2) || process.argv.includes('--debug', 2)
 const API_URL = 'https://api.github.com'
 const VERSION = 'application/vnd.github.v3+json'
+const PREVIEW = 'application/vnd.github.inertia-preview+json'
 
 class GitHub {
   constructor (token) {
@@ -65,6 +66,81 @@ class GitHub {
       .then(r => r.json())
       .catch(e => console.error(e))
     return ref
+  }
+
+  async getProjects (user, org, repo, state) {
+    let type = ''
+    if (user) {
+      type = `users/${user}`
+    } else if (org) {
+      type = `orgs/${org}`
+    } else {
+      throw new SimpleError('Project has to be either bound to a user or an organization', DEBUG)
+    }
+    if (repo) type += `/${repo}`
+
+    const projects = await fetch(`${API_URL}/${type}/projects${state ? `?state=${state}` : ''}`, {
+      method: 'GET',
+      headers: {
+        Accept: PREVIEW,
+        Authorization: `Bearer ${this.token}`
+      }
+    })
+      .then(r => r.json())
+      .catch(e => console.error(e))
+    return projects
+  }
+
+  async getProject (id) {
+    const project = await fetch(`${API_URL}/projects/${id}`, {
+      method: 'GET',
+      headers: {
+        Accept: PREVIEW,
+        Authorization: `Bearer ${this.token}`
+      }
+    })
+      .then(r => r.json())
+      .catch(e => console.error(e))
+    return project
+  }
+
+  async getProjectColumns (id) {
+    const columns = await fetch(`${API_URL}/projects/${id}/columns`, {
+      method: 'GET',
+      headers: {
+        Accept: PREVIEW,
+        Authorization: `Bearer ${this.token}`
+      }
+    })
+      .then(r => r.json())
+      .catch(e => console.error(e))
+    return columns
+  }
+
+  async getProjectCards (id) {
+    const cards = await fetch(`${API_URL}/projects/columns/${id}/cards`, {
+      method: 'GET',
+      headers: {
+        Accept: PREVIEW,
+        Authorization: `Bearer ${this.token}`
+      }
+    })
+      .then(r => r.json())
+      .catch(e => console.error(e))
+    return cards
+  }
+
+  async getContent (url) {
+    const content = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: VERSION,
+        Authorization: `Bearer ${this.token}`
+      }
+    })
+      .then(r => r.json())
+      .catch(e => console.error(e))
+    return content
   }
 
   async createRef (org, repo, branch) {
