@@ -1,20 +1,26 @@
 #!/usr/bin/env sh
 
-SCRIPT=$(readlink -f "$0")
-SCRIPTPATH=$(dirname "$SCRIPT")
+SCRIPTPATH=$(dirname "$0")
+cd "$SCRIPTPATH"
+ABSPATH=$(pwd)
+cd -
 
-if [ ! -f $SCRIPTPATH/.env ]; then
-  cp $SCRIPTPATH/.env.example $SCRIPTPATH/.env
-  echo Remember to add your GitHub Personal Token to $SCRIPTPATH/.env
+exit
+
+if [ ! -f $ABSPATH/.env ]; then
+  cp $ABSPATH/.env.example $ABSPATH/.env
+  echo Remember to add your GitHub Personal Token to $ABSPATH/.env
 fi
 
+cd $ABSPATH
 npm ci --only=prod > /dev/null
+cd -
 
 if [ ! -d $HOME/.local/bin ]; then
   mkdir -p $HOME/.local/bin
 fi
 
-ln -sf $SCRIPTPATH/GHR $HOME/.local/bin/GHR
-ln -sf $SCRIPTPATH/GHRC $HOME/.local/bin/GHRC
-ln -sf $SCRIPTPATH/GHPR $HOME/.local/bin/GHPR
-ln -sf $SCRIPTPATH/GHCL $HOME/.local/bin/GHCL
+ln -sf $ABSPATH/GHR $HOME/.local/bin/GHR
+ln -sf $ABSPATH/GHRC $HOME/.local/bin/GHRC
+ln -sf $ABSPATH/GHPR $HOME/.local/bin/GHPR
+ln -sf $ABSPATH/GHCL $HOME/.local/bin/GHCL
